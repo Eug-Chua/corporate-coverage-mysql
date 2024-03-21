@@ -7,7 +7,7 @@ USE crm;
 CREATE TABLE Companies (
     company_id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
-    obligor_risk_rating INT,
+    obligor_risk_rating VARCHAR(3),
     description TEXT
 );
 
