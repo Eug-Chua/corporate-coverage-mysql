@@ -8,37 +8,38 @@ INSERT INTO Companies (name, obligor_risk_rating, description) VALUES
 ('Louis Dreyfus Company', '4-', "Global leader in agricultural processing with business lines spanning entire value chains.");
 
 -- Inserting data into Clients
-INSERT INTO Clients (first_name, last_name, rating, company_id) VALUES
-('John', 'Doe', 5, 1),
-('Jane', 'Smith', 4, 2),
-('Alice', 'Johnson', 3, 3);
+INSERT INTO Clients (first_name, last_name, company_id) VALUES
+('Juan', 'Luciano', 1),
+('Greg', 'Heckman', 2),
+('Brian', 'Sikes', 3);
+('Michael', 'Gelchie', 4);
 
 -- Inserting data into Departments
 INSERT INTO Departments (name) VALUES
-('Sales'),
-('Marketing'),
-('Finance');
+('Client Coverage'),
+('Transaction Banking'),
+('Capital Markets');
 
 -- Inserting data into Employees
 INSERT INTO Employees (first_name, last_name, department_id) VALUES
-('Robert', 'Brown', 1),
-('Emily', 'Davis', 1),
-('Michael', 'Wilson', 2);
+('Jared', 'Vennett', 1),
+('Wing', 'Chau', 1),
+('Ted', 'Jiang', 2);
 
 -- Inserting data into Products
 INSERT INTO Products (name, description) VALUES
-('Investment Plan A', 'Comprehensive investment plan for long-term growth'),
-('Retirement Fund B', 'Retirement fund with a focus on stability and steady income'),
-('Equity Package C', 'Diverse equity package for aggressive growth');
+('Term Loan', 'Structured product to finance specific transactions.'),
+('Bridge Financing', 'Intermediate funding product to finance working capital requirements.'),
+('Letter of Credit', "Issuances of guarantees on companies' behalf to make future payments.");
 
 -- Inserting data into Sales
-INSERT INTO Sales (product_id, employee_id, client_id, quantity, sale_date) VALUES
-(1, 1, 1, 10, '2024-01-15'),
-(2, 1, 2, 5, '2024-01-20'),
-(3, 2, 3, 15, '2024-01-25');
+INSERT INTO Sales (product_id, employee_id, company_id, amount, sale_date) VALUES
+(1, 1, 1, 10.5, '2024-01-05'),
+(2, 1, 2, 25.5, '2024-02-20'),
+(3, 2, 3, 15.0, '2024-01-25');
 
 -- Inserting data into EmployeeCustomer
-INSERT INTO EmployeeCustomer (employee_id, client_id) VALUES
+INSERT INTO EmployeeCustomer (employee_id, company_id) VALUES
 (1, 1),
 (2, 2),
 (1, 3);

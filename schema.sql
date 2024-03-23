@@ -49,7 +49,7 @@ CREATE TABLE Sales (
     employee_id INT,
     company_id INT,
     client_id INT,
-    sale_amount INT,
+    amount FLOAT,
     sale_date DATE,
     FOREIGN KEY (product_id) REFERENCES Products(product_id),
     FOREIGN KEY (employee_id) REFERENCES Employees(employee_id),
