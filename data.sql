@@ -1,17 +1,17 @@
--- Sample INSERT Statements for Corporate Banking Coverage Team
-use crm;
--- Inserting data into Companies
-INSERT INTO Companies (name, obligor_risk_rating, description) VALUES
-('Archer-Daniels-Midland Company', "5+", "Global leader in human nutrition and the world's premier agricultural origination and processing company"),
-('Bunge Global', '5-','The world’s leader in oilseed processing and a leading producer and supplier of specialty plant-based oils, fats and protein'),
-('Cargill', '4', "The world’s largest agribusiness with assets across agriculture and industry, including steel and transport.");
-('Louis Dreyfus Company', '4-', "Global leader in agricultural processing with business lines spanning entire value chains.");
+-- INSERT Statements for Corporate Banking Coverage Team
+use cbct;
+-- Inserting data into Borrowers
+INSERT INTO Borrowers (name, obligor_risk_rating, description) VALUES
+('Archer-Daniels-Midland Company', "5+", "Global leader in human nutrition and the world's premier agricultural origination and processing company."),
+('Bunge Global', '5-','The world’s leader in oilseed processing and a leading producer and supplier of specialty plant-based oils, fats and protein.'),
+('Cargill', '4', "The world’s largest agribusiness with assets across agriculture and industry, including steel and transport."),
+("Louis Dreyfus Company", '4-', "Global leader in agricultural processing with business lines spanning entire value chains.");
 
 -- Inserting data into Clients
-INSERT INTO Clients (first_name, last_name, company_id) VALUES
+INSERT INTO Clients (first_name, last_name, borrower_id) VALUES
 ('Juan', 'Luciano', 1),
 ('Greg', 'Heckman', 2),
-('Brian', 'Sikes', 3);
+('Brian', 'Sikes', 3),
 ('Michael', 'Gelchie', 4);
 
 -- Inserting data into Departments
@@ -33,13 +33,13 @@ INSERT INTO Products (name, description) VALUES
 ('Letter of Credit', "Issuances of guarantees on companies' behalf to make future payments.");
 
 -- Inserting data into Sales
-INSERT INTO Sales (product_id, employee_id, company_id, amount, sale_date) VALUES
+INSERT INTO Sales (product_id, employee_id, borrower_id, amount, sale_date) VALUES
 (1, 1, 1, 10.5, '2024-01-05'),
 (2, 1, 2, 25.5, '2024-02-20'),
 (3, 2, 3, 15.0, '2024-01-25');
 
--- Inserting data into EmployeeCustomer
-INSERT INTO EmployeeCustomer (employee_id, company_id) VALUES
+-- Inserting data into EmployeeBorrower
+INSERT INTO EmployeeBorrower (employee_id, borrower_id) VALUES
 (1, 1),
 (2, 2),
 (1, 3);

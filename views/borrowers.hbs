@@ -1,0 +1,28 @@
+{{#extends "base"}}
+
+{{#block "content"}}
+<table class="table">
+    <thead>
+        <tr>
+            <th>Borrower ID</th>
+            <th>Name</th>
+            <th>Obligor Risk Rating</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {{#each borrowers}}
+        <tr>
+            <td>{{this.borrower_id}}</td>
+            <td>{{this.name}}</td>
+            <td>{{this.obligor_risk_rating}}</td>
+            <td>
+                <a href="/delete-borrowers/{{this.borrower_id}}" class="btn btn-danger btn-sm">Delete</a>
+            </td>
+        </tr>
+        {{/each}}
+    </tbody>
+</table>
+{{/block}}
+
+{{/extends}}

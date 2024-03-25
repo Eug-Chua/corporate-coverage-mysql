@@ -1,0 +1,16 @@
+{{#extends "base"}}
+
+{{#block "content"}}
+<h1>Delete Borrower</h1>
+<form method="POST">
+    <div class="alert alert-danger">
+        Are you sure you want to delete {{borrower.name}} from the database?
+    </div>
+    <div>
+        <input type="submit" value="Delete" class="btn btn-danger mt-3"/>
+        <a href="/borrowers" class="btn btn-secondary mt-3">Cancel</a>
+    </div>
+</form>
+{{/block}}
+
+{{/extends}}

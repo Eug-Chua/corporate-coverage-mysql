@@ -1,11 +1,11 @@
 -- SQL Schema for Corporate Banking Coverage Team
-CREATE DATABASE crm;
+CREATE DATABASE cbct;
 
-USE crm;
+USE cbct;
 
--- Creating Companies Table
-CREATE TABLE Companies (
-    company_id INT AUTO_INCREMENT PRIMARY KEY,
+-- Creating Borrowers Table
+CREATE TABLE Borrowers (
+    borrower_id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     obligor_risk_rating VARCHAR(3),
     description TEXT
@@ -16,8 +16,8 @@ CREATE TABLE Clients (
     client_id INT AUTO_INCREMENT PRIMARY KEY,
     first_name VARCHAR(255) NOT NULL,
     last_name VARCHAR(255) NOT NULL,
-    company_id INT,
-    FOREIGN KEY (company_id) REFERENCES Companies(company_id)
+    borrower_id INT,
+    FOREIGN KEY (borrower_id) REFERENCES Borrowers(borrower_id)
 );
 
 -- Creating Departments Table
@@ -47,23 +47,21 @@ CREATE TABLE Sales (
     sale_id INT AUTO_INCREMENT PRIMARY KEY,
     product_id INT,
     employee_id INT,
-    company_id INT,
-    client_id INT,
+    borrower_id INT,
     amount FLOAT,
     sale_date DATE,
     FOREIGN KEY (product_id) REFERENCES Products(product_id),
     FOREIGN KEY (employee_id) REFERENCES Employees(employee_id),
-    FOREIGN KEY (company_id) REFERENCES Companies(company_id)
-    FOREIGN KEY (client_id) REFERENCES Clients(client_id),
+    FOREIGN KEY (borrower_id) REFERENCES Borrowers(borrower_id),
 );
 
 -- Creating EmployeeClient Table
-CREATE TABLE EmployeeClient (
+CREATE TABLE EmployeeBorrower (
     employee_id INT,
-    client_id INT,
-    PRIMARY KEY (employee_id, client_id),
+    borrower_id INT,
+    PRIMARY KEY (employee_id, borrower_id),
     FOREIGN KEY (employee_id) REFERENCES Employees(employee_id),
-    FOREIGN KEY (client_id) REFERENCES Clients(client_id)
+    FOREIGN KEY (borrower_id) REFERENCES Borrowers(borrower_id)
 );
 
 -- Creating EmployeeProduct Table
