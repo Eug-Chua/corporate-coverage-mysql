@@ -1,24 +1,65 @@
 {{#extends "base"}}
 
 {{#block "content"}}
+<form method="POST">
+    <div class="row my-4">
+        <div class="col-auto">
+            <label class="col-form-label">Search by Borrower Name:</label>
+        </div>
+        <div class="col-auto">
+            <select class="form-select" aria-label="Select Borrower" name="borrower_id">
+                <option value=""></option>
+                {{#each borrowers}}
+                    <option value="{{this.name}}">{{this.name}}</option>
+                {{/each}}
+            </select>
+        </div>
+    </div>
+    <div class="row my-4">
+        <div class="col-auto">
+            <label class="col-form-label">Search By Product:</label>
+        </div>
+        <div class="col-auto">
+            <select class="form-select" aria-label="Select Product" name="product_id">
+                <option value=""></option>
+                {{#each products}}
+                    <option value="{{this.product_id}}">{{this.name}}</option>
+                {{/each}}
+            </select>
+        </div>
+         <div class="col-auto">
+            <input type="submit" value="Search" class="btn btn-primary">
+            <a href="/borrowers" class="btn btn-secondary">Reset</a>
+        </div>
+    </div>
+</form>
 <table class="table">
     <thead>
         <tr>
             <th>Borrower ID</th>
             <th>Name</th>
             <th>Obligor Risk Rating</th>
+            <th>Product Name</th>
+            <th>Loan Amount (USD mm)</th>
             <th></th>
         </tr>
     </thead>
     <tbody>
+
         {{#each borrowers}}
         <tr>
             <td>{{this.borrower_id}}</td>
             <td>{{this.name}}</td>
             <td>{{this.obligor_risk_rating}}</td>
+            <td>{{this.product_name}}</td>
+            <td>{{this.amount}}</td>
+            <td>
+                <a href="/update-borrowers/{{this.borrower_id}}" class="btn btn-warning btn-sm">Update</a>
+            </td>
             <td>
                 <a href="/delete-borrowers/{{this.borrower_id}}" class="btn btn-danger btn-sm">Delete</a>
             </td>
+            
         </tr>
         {{/each}}
     </tbody>

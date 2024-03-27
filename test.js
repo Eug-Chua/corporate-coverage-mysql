@@ -36,21 +36,18 @@ async function main() {
     })
 
     // ROUTING
+    // app.get('/borrowers', async function(req,res){
+    //     let [borrowers] = await connection.execute(`
+    //     SELECT * FROM Borrowers
+    //     `);
+    //     // the code above is the same as: let customers = await connection.execute("SELECT * FROM Borrowers")[0];
+    //     res.render('borrowers', {
+    //         borrowers
+    //     })
+    // })
+
     app.get('/borrowers', async function(req, res){
-        const {searchBorrower,product_id} = req.query;
-        let searchquery = `WHERE `;
-        let queryArray = [];
-        if(searchBorrower)
-            queryArray.push(`b.name = "${searchBorrower}"`);
-        if(product_id)
-            queryArray.push(`p.product_id = ${product_id}`);
-        for (let index = 0; index < queryArray.length; index++) {
-            searchquery = searchquery + queryArray[index];
-            if(index != queryArray.length - 1)
-                searchquery = searchquery + " AND "
-        }
-
-        let [borrowers] = !queryArray.length ? await connection.execute(`
+        let [borrowers] = await connection.execute(`
             SELECT 
                 b.borrower_id,
                 b.name,
@@ -61,31 +58,11 @@ async function main() {
                 Borrowers b
             LEFT JOIN Sales s ON b.borrower_id = s.borrower_id
             LEFT JOIN Products p ON s.product_id = p.product_id
-        `) : await connection.execute(`
-            SELECT 
-                b.borrower_id,
-                b.name,
-                b.obligor_risk_rating,
-                p.name AS product_name,
-                s.amount
-            FROM
-                Borrowers b
-            LEFT JOIN Sales s ON b.borrower_id = s.borrower_id
-            LEFT JOIN Products p ON s.product_id = p.product_id
-            ${searchquery} 
         `);
-
-        const [products] = await connection.execute("SELECT * FROM Products");
-
+    
         res.render('borrowers', {
-            borrowers,
-            products
+            borrowers
         });
-    });
-
-    app.post("/borrowers", async function (req,res){
-        const {borrower_id,product_id} = req.body;
-        res.redirect(`/borrowers?searchBorrower=${borrower_id}&product_id=${product_id}`);
     });
 
     app.get('/create-borrowers', async function(req,res){
@@ -134,23 +111,36 @@ async function main() {
         res.redirect('/borrowers');
     })
 
+    // app.get("/update-borrowers/:borrowerID", async function(req,res){
+    //     const {borrowerID} = req.params;
+    //     const query = `SELECT * FROM Borrowers WHERE borrower_id = ?`;
+    //     const [borrowers] = await connection.execute(query, [borrowerID]);
+    //     const wantedBorrower = borrowers[0];
+
+    //     res.render('update-borrowers',{
+    //         'borrower':wantedBorrower
+    //     })
+    // })
+
     app.get("/update-borrowers/:borrowerID", async function(req, res) {
         const { borrowerID } = req.params;
 
         const [borrowers] = await connection.execute("SELECT * FROM Borrowers WHERE borrower_id = ?", [borrowerID]);
-        const borrower = borrowers[0];
-
+        const borrower = borrowers[0]; // Assuming you're fetching one borrower
+    
+        // Existing logic to fetch borrower and products...
         const [products] = await connection.execute("SELECT * FROM Products");
     
-        // Fetch sales for this borrower
+        // Attempt to fetch sales for this borrower
         let [sales] = await connection.execute(`
             SELECT s.sale_id, s.amount, s.product_id AS selected_product_id
             FROM Sales s
             WHERE s.borrower_id = ?`, 
             [borrowerID]);
     
+        // Check if the borrower has no sales; if not, add a placeholder for new data
         if (sales.length === 0) {
-            sales = {
+            sales = [{
                 sale_id: null,
                 amount: null,
                 selected_product_id: null,
@@ -158,35 +148,55 @@ async function main() {
                     ...product,
                     isSelected: false // No product is selected
                 }))
-            };
+            }];
+        } else {
+            for (let sale of sales) {
+                sale.products = products.map(product => ({
+                    ...product,
+                    isSelected: product.product_id === sale.selected_product_id
+                }));
+            }
         }
-        else
-            sales = sales[0];
-        
+    
         res.render('update-borrowers', {
             borrower, 
             products,
-            borrowerID, 
-            sales
+            borrowerID, // Make sure to pass this for the form action
+            sales // Modified to always include at least one entry
         });
     });
+    
+
+    // app.post("/update-borrowers/:borrowerID", async function(req, res){
+    //     const { borrowerID } = req.params;
+    //     const { borrower_name, risk_rating, description } = req.body;
+    //     const query = `UPDATE Borrowers SET name = ?, obligor_risk_rating = ?, description = ? WHERE borrower_id = ?`;
+    //     await connection.execute(query, [borrower_name, risk_rating, description, borrowerID]);
+    //     res.redirect('/borrowers');
+    // });
+
+    // Simplified example; adjust according to your needs
 
     app.post("/update-borrowers/:borrowerID", async function(req, res){
         const { borrowerID } = req.params;
-        let {sale_id, product_id,loan_amount} = req.body;
-        // sales = Array.isArray(sales) ? sales : [sales];
+        let sales = req.body.sales;
+        
+        // Ensure sales is always an array
+        sales = Array.isArray(sales) ? sales : [sales];
     
         try {
-            const amount = parseFloat(loan_amount);
-
-            if (sale_id) {
-                await connection.execute("UPDATE Sales SET product_id = ?, amount = ? WHERE sale_id = ?", [product_id, amount, sale_id]);
-            } else {
-                if (product_id && !isNaN(amount)) {
-                    await connection.execute("INSERT INTO Sales (borrower_id, product_id, amount) VALUES (?, ?, ?)", [borrowerID, product_id, amount]);
+            for (let sale of sales) {
+                const { sale_id, product_id, loan_amount } = sale;
+                const amount = parseFloat(loan_amount); // Ensure amount is a number
+    
+                if (sale_id) {
+                    await connection.execute("UPDATE Sales SET product_id = ?, amount = ? WHERE sale_id = ?", [product_id, amount, sale_id]);
+                } else {
+                    if (product_id && !isNaN(amount)) {
+                        await connection.execute("INSERT INTO Sales (borrower_id, product_id, amount) VALUES (?, ?, ?)", [borrowerID, product_id, amount]);
+                    }
                 }
             }
-            
         } catch (error) {
             console.error("Failed to update sales:", error);
             return res.status(500).send("Server error occurred.");
@@ -194,6 +204,39 @@ async function main() {
     
         res.redirect('/borrowers');
     });
+    
+    
+
+    // app.post("/update-borrowers/:borrowerID", async function(req, res) {
+    //     const { borrowerID } = req.params;
+    //     const { sales } = req.body; // Assuming `sales` is structured as an array of objects
+    
+    //     for (let sale of sales) {
+    //         const { sale_id, product_id, loan_amount } = sale;
+    
+    //         // Check if this is an existing sale or a new one
+    //         if (sale_id) {
+    //             // Update existing sale
+    //             await connection.execute(`
+    //                 UPDATE Sales 
+    //                 SET product_id = ?, amount = ? 
+    //                 WHERE sale_id = ?`, 
+    //                 [product_id, loan_amount, sale_id]);
+    //         } else if (product_id && loan_amount) {
+    //             // Create new sale, assuming product_id and loan_amount must both be provided
+    //             await connection.execute(`
+    //                 INSERT INTO Sales (product_id, employee_id, borrower_id, amount, sale_date) 
+    //                 VALUES (?, ?, ?, ?, CURDATE())`, 
+    //                 [product_id, /* employee_id */, borrowerID, loan_amount]);
+    //             // Note: You'll need to handle `employee_id` accordingly, perhaps as a hidden field in the form or set it based on the session/user context
+    //         }
+    //     }
+    
+    //     res.redirect('/borrowers');
+    // });
+    
+
+    
 }
 
 main()
